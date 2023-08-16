@@ -1,0 +1,56 @@
+package linkroom
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+// check the room, then call Addroom to add the room to slice of rooms
+func ReadRoom(data string, t roomtype) {
+	d := strings.Fields(data)
+	x, _ := strconv.Atoi(d[1])
+	y, _ := strconv.Atoi(d[2])
+	AddRoom(d[0], x, y, t)
+}
+
+// read file and seperate the data and restore in corespond slice or valiable
+func Readfile(filename string) {
+	data := ReadByLine(filename)
+	//fmt.Printf("File data is:=%#v", data)
+	for i := 0; i < len(data); i++ {
+		fmt.Println(i)
+		fmt.Printf("File data %v := %v\n", i, data[i])
+		t := Normal
+		if data[i] == "##start" {
+			i++
+			t = Start
+		}
+		if data[i] == "##end" {
+			i++
+			t = End
+		}
+		ReadRoom(data[i], t) //found a room then call ReadRoom to check it.
+
+	}
+
+}
+
+// readByline will retrun a slice of string
+func ReadByLine(filename string) []string {
+	file, err := os.Open("./examples/" + filename) //open the file first
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	var newstring []string
+	for scanner.Scan() {
+		readstring := scanner.Text() //read the whole line, then next line .....
+		newstring = append(newstring, readstring)
+	}
+	return newstring
+}
