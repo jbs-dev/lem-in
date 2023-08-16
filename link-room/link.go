@@ -73,14 +73,3 @@ func AddRoom(name string, x_cord, y_cord int, t roomtype) {
 		}
 	}
 }
-
-// check if Rooms slice has a start or end room
-func CheckStartEnd() (bool, bool) {
-	last := len(Rooms) - 1
-	hasend, hasstart := false, false
-	if last > 0 { // this check avoids index out of range errors if the slice is still empty
-		hasend = Rooms[last].Rtype == End
-		hasstart = Rooms[0].Rtype == Start
-	}
-	return hasstart, hasend
-}

@@ -25,6 +25,6 @@ func main() {
 	}
 
 	// print the program output
-	fmt.Printf("\nProgram output:\n")
+	fmt.Println("\nProgram output:")
 	link.ProgramOutput()
 }

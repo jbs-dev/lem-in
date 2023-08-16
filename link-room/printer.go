@@ -16,4 +16,7 @@ func ProgramOutput() {
 		fmt.Printf("%d %d", curr.X, curr.Y)
 		fmt.Println()
 	}
+	for i := range Links {
+		fmt.Println(Links[i])
+	}
 }

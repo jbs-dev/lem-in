@@ -3,39 +3,57 @@ package linkroom
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
 )
 
+var Links []string
+
 // check the room, then call Addroom to add the room to slice of rooms
-func ReadRoom(data string, t roomtype) {
+/*func ReadRoom(data string, t roomtype) {
 	d := strings.Fields(data)
 	x, _ := strconv.Atoi(d[1])
 	y, _ := strconv.Atoi(d[2])
 	AddRoom(d[0], x, y, t)
 }
+*/
 
 // read file and seperate the data and restore in corespond slice or valiable
 func Readfile(filename string) {
 	data := ReadByLine(filename)
 	//fmt.Printf("File data is:=%#v", data)
-	for i := 0; i < len(data); i++ {
-		fmt.Println(i)
-		fmt.Printf("File data %v := %v\n", i, data[i])
-		t := Normal
-		if data[i] == "##start" {
-			i++
-			t = Start
-		}
-		if data[i] == "##end" {
-			i++
-			t = End
-		}
-		ReadRoom(data[i], t) //found a room then call ReadRoom to check it.
 
+	if len(data) < 7 {
+		log.Fatal("ERROR: invalid data format, file is too short")
 	}
+	int, err := strconv.Atoi(data[0])
+	if err == nil {
+		NumberOfants = int
+		if NumberOfants == 0 {
+			log.Fatal("ERROR: invalid data format, invalid number of Ants")
+		}
+	}
+	for i := 1; i < len(data); i++ {
+		//fmt.Printf("File data %v := %v\n", i, data[i])
 
+		if strings.Contains(data[i], "-") {
+			Links = append(Links, data[i])
+		} else {
+			t := Normal
+			if data[i] == "##start" {
+				i++
+				t = Start
+			}
+			if data[i] == "##end" {
+				i++
+				t = End
+			}
+			CheckValidRoom(data[i], t)
+		}
+	}
+	//fmt.Println(Links)
 }
 
 // readByline will retrun a slice of string
