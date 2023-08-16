@@ -27,6 +27,12 @@ func CheckValidRoom(data string, t roomtype) {
 			err := fmt.Errorf("ERROR: invalid data format, coordinates 'x' should be an integer number, not \"%v\"", y)
 			log.Fatal(err)
 		}
+		for _, r1 := range Rooms {
+			if x == r1.X && y == r1.Y {
+				err := fmt.Errorf("ERROR: invalid data format, these coordinates are already taken by room \"%v\"", r1.Name)
+				log.Fatal(err)
+			}
+		}
 		AddRoom(d[0], x, y, t)
 	}
 }
