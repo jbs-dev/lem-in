@@ -24,6 +24,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	//link.PrintColony()
+	link.PrintRoomInfo()
 	// print the program output
 	fmt.Println("\nProgram output:")
 	link.ProgramOutput()

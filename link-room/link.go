@@ -73,3 +73,32 @@ func AddRoom(name string, x_cord, y_cord int, t roomtype) {
 		}
 	}
 }
+
+// function to add a link between rooms matching room names r1 and r2
+func AddLink(n1, n2 string) {
+	if n1 == n2 { // cannot create a link to itself
+		err := fmt.Errorf("ERROR: Link \"%v-%v\" links to itself", n1, n2)
+		log.Fatal(err)
+	}
+
+	for i := range Rooms {
+		r1 := &Rooms[i] // grab pointer to the room in outer loop i
+		if r1.Name == n1 {
+			for j := range Rooms {
+				r2 := &Rooms[j]
+				if r2.Name == n2 {
+					for _, link := range r1.Links { // check if rooms alredy linked
+						if link == r2 {
+							return
+						}
+					} // if rooms not yet linked -> create link data
+					r1.Links = append(r1.Links, r2)
+					r2.Links = append(r2.Links, r1)
+					return
+				}
+			}
+		}
+	}
+	err := fmt.Errorf("ERROR: Link \"%v-%v\" cannot be created. One or both of the rooms do not exist", n1, n2)
+	log.Fatal(err)
+}

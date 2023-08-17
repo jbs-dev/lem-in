@@ -37,9 +37,14 @@ func Readfile(filename string) {
 	}
 	for i := 1; i < len(data); i++ {
 		//fmt.Printf("File data %v := %v\n", i, data[i])
-
 		if strings.Contains(data[i], "-") {
-			Links = append(Links, data[i])
+			linkR := strings.Split(data[i], "-")
+			if len(linkR) != 2 {
+				log.Fatal("ERROR: invalid data format, links are defined by \"name1:name2\", and will usually look like \"1-2\", \"2-5\"")
+			} else {
+				Links = append(Links, data[i])
+			}
+			AddLink(linkR[0], linkR[1])
 		} else {
 			t := Normal
 			if data[i] == "##start" {

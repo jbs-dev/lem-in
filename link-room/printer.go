@@ -20,3 +20,22 @@ func ProgramOutput() {
 		fmt.Println(Links[i])
 	}
 }
+
+func PrintRoomInfo() {
+	/*fmt.Println("Room Slice:")
+	fmt.Println(Rooms)
+	fmt.Println()*/
+	for _, r1 := range Rooms {
+		fmt.Println("\nRoom Info:=", r1)
+		fmt.Printf("Room %v:\n\tCoordinates:(%v,%v) \n", r1.Name, r1.X, r1.Y)
+		fmt.Printf("\tType: %d\n", r1.Rtype)
+		fmt.Printf("\tLinks: ")
+		for i, link := range r1.Links {
+			fmt.Printf("%v", link.Name)
+			if i < len(r1.Links)-1 {
+				fmt.Printf(", ")
+			}
+		}
+		fmt.Println()
+	}
+}
