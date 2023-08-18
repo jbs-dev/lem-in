@@ -32,6 +32,12 @@ func main() {
 	start := 0 //parse first element of []Rooms witch is start room
 	link.Path = append(link.Path, 0)
 	link.FindValidPath(start)
-	fmt.Println("All valid paths:=", link.Paths)
+	fmt.Println("All valid paths:=\n", link.Paths)
+	/*var RoomsOfPath []int
+	for i := range link.Paths {
+		fmt.Printf("How many Rooms in path %v := %v\n", i, len(link.Paths[i]))
+		RoomsOfPath = append(RoomsOfPath, len(link.Paths[i]))
+	}*/
+	link.QueueAnts(link.NumberOfants, link.Paths)
 	// fmt.Println(len(link.Rooms[2].Links))
 }
