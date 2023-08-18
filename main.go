@@ -24,9 +24,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//link.PrintColony()
 	link.PrintRoomInfo()
 	// print the program output
 	fmt.Println("\nProgram output:")
 	link.ProgramOutput()
+	start := 0 //parse first element of []Rooms witch is start room
+	link.Path = append(link.Path, 0)
+	link.FindValidPath(start)
+	fmt.Println("All valid paths:=", link.Paths)
+	// fmt.Println(len(link.Rooms[2].Links))
 }

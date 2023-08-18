@@ -18,7 +18,9 @@ type Room struct {
 	Name  string
 	X, Y  int      // coordinates
 	Rtype roomtype // whether the room is a start, finsish or nomal room
-	Links []*Room  // links to other rooms
+	//	Links   []*Room  // links to other rooms
+	Links   []int // links to other rooms (by index number of the slice Rooms)
+	Visited bool
 }
 
 var Rooms []Room
@@ -82,18 +84,19 @@ func AddLink(n1, n2 string) {
 	}
 
 	for i := range Rooms {
-		r1 := &Rooms[i] // grab pointer to the room in outer loop i
+		r1 := &Rooms[i] // grab pointer to the room in outer loop i, same as Room[i]
 		if r1.Name == n1 {
 			for j := range Rooms {
 				r2 := &Rooms[j]
 				if r2.Name == n2 {
 					for _, link := range r1.Links { // check if rooms alredy linked
-						if link == r2 {
+						if link == j {
 							return
 						}
 					} // if rooms not yet linked -> create link data
-					r1.Links = append(r1.Links, r2)
-					r2.Links = append(r2.Links, r1)
+					//Room[i].Links = append(Room[i].Links, j)
+					r1.Links = append(r1.Links, j)
+					r2.Links = append(r2.Links, i)
 					return
 				}
 			}

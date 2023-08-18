@@ -31,11 +31,12 @@ func PrintRoomInfo() {
 		fmt.Printf("\tType: %d\n", r1.Rtype)
 		fmt.Printf("\tLinks: ")
 		for i, link := range r1.Links {
-			fmt.Printf("%v", link.Name)
+			fmt.Printf("%v", Rooms[link].Name)
 			if i < len(r1.Links)-1 {
 				fmt.Printf(", ")
 			}
 		}
 		fmt.Println()
+		fmt.Printf("\tVisited: %v\n", r1.Visited)
 	}
 }

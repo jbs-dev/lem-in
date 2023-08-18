@@ -25,7 +25,7 @@ func Readfile(filename string) {
 	data := ReadByLine(filename)
 	//fmt.Printf("File data is:=%#v", data)
 
-	if len(data) < 7 {
+	if len(data) < 6 {
 		log.Fatal("ERROR: invalid data format, file is too short")
 	}
 	int, err := strconv.Atoi(data[0])
