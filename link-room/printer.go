@@ -25,8 +25,9 @@ func PrintRoomInfo() {
 	/*fmt.Println("Room Slice:")
 	fmt.Println(Rooms)
 	fmt.Println()*/
-	for _, r1 := range Rooms {
-		fmt.Println("\nRoom Info:=", r1)
+	for i, r1 := range Rooms {
+		fmt.Println("\nRooms Index:=", i)
+		fmt.Println("Room Info:=", r1)
 		fmt.Printf("Room %v:\n\tCoordinates:(%v,%v) \n", r1.Name, r1.X, r1.Y)
 		fmt.Printf("\tType: %d\n", r1.Rtype)
 		fmt.Printf("\tLinks: ")

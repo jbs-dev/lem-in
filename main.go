@@ -26,6 +26,7 @@ func main() {
 
 	link.PrintRoomInfo()
 	// print the program output
+	fmt.Printf("----------------------- %s-----------------------", filename)
 	fmt.Println("\nProgram output:")
 	link.ProgramOutput()
 	start := 0 //parse first element of []Rooms witch is start room
