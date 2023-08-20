@@ -5,9 +5,11 @@ import (
 	link "lem-in/link-room"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
+
 	filename := os.Args[1:]
 	if len(filename) < 1 {
 		err := fmt.Errorf("ERROR: Please provide a filename")
@@ -25,6 +27,8 @@ func main() {
 	}
 
 	link.PrintRoomInfo()
+	// Note the start time for performance measurement
+	programstart := time.Now()
 	fmt.Printf("\n----------------------- %s-----------------------", filename)
 	fmt.Println("\nProgram output:")
 	link.ProgramOutput()
@@ -34,4 +38,7 @@ func main() {
 	fmt.Println("All valid paths:=\n", link.Paths)
 	link.QueueAnts(link.NumberOfants, link.Paths)
 	//link.SendingAnts()
+	elapsed := time.Since(programstart)
+	log.Printf("%sAll the ants spent %s to reach goal", "\033[31m", elapsed)
+
 }
