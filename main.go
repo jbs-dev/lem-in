@@ -32,7 +32,7 @@ func main() {
 	mapOfNodes, startNode, endNode := parseLines(lines)
 
 	// Print simple aesthetic header using printf
-	fmt.Printf("----------------------- %s.txt -----------------------\n\n", filename)
+	// fmt.Printf("----------------------- %s.txt -----------------------\n\n", filename)
 
 	// Print file content for debugging
 	bytes, err := os.ReadFile(fmt.Sprintf("./examples/%s.txt", filename))
@@ -40,8 +40,9 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	fmt.Printf("Number of Ants: %s \n\n", string(bytes))
+	fmt.Print(string(bytes))
+	fmt.Println()
+	fmt.Println() // Add this line to ensure a newline after printing the map content.
 
 	// If end node is a neighbor of start node, print path for each ant directly
 	for _, v := range mapOfNodes[startNode.Name].Neighbors {
@@ -197,14 +198,25 @@ func isEqual(fullpath, path []string) bool {
 }
 
 // minLen finds the minimum length after summing the lengths of the paths and their respective ant queues.
+// This is a common technique used in Go to find the largest possible int value.
+// It is used to initialize the minimum length to the largest possible value.
+// This is done to ensure that the first path length + ant queue length is smaller than the current minimum.
 func minLen(p [][]string, ants [][]int) int {
+	// ^uint(0) inverts all the bits of the largest possible uint value.
+	// >> 1 shifts the bits one position to the right.
+	// The effect is to get the largest possible int value.
+	// This is an idiomatic way in Go to get the largest int value, considering differences in architectures (32-bit vs 64-bit).
 	min := int(^uint(0) >> 1)
+
+	// Loop through all the paths.
 	for i := range p {
+		// Check if the current combined length (path length + ant queue length) is smaller than the current minimum.
 		if min > len(p[i])+len(ants[i]) {
-			min = len(p[i]) + len(ants[i])
+			min = len(p[i]) + len(ants[i]) // Update the minimum if the condition is true.
 		}
 	}
-	return min
+
+	return min // Return the smallest combined length found.
 }
 
 // MaxLen finds the maximum length after summing the lengths of the paths and their respective ant queues.
@@ -252,11 +264,9 @@ func lemin(n int, p [][]string, m map[string]*s.Node) {
 
 	// Print the ant movement solution.
 	for _, v := range solution {
-		for _, w := range v {
-			fmt.Printf("%s ", w)
-		}
-		fmt.Println()
+		fmt.Println(strings.Join(v, " "))
 	}
+
 }
 
 // reverse reverses the order of a slice of strings.
@@ -386,4 +396,14 @@ func readLines(file string) (int, []string) {
 	n, err := strconv.Atoi(lines[0])
 	abortOnError(err)
 	return n, lines[1:]
+}
+
+func printNode(n map[string]*s.Node) {
+	for _, v := range n {
+		fmt.Printf("Name: %s, X: %d, Y: %d, Used: %t, Visited: %t, Neighbors: ", v.Name, v.X, v.Y, v.Used, v.Visited)
+		for _, vv := range v.Neighbors {
+			fmt.Printf("%s ", vv.Name)
+		}
+		fmt.Println()
+	}
 }

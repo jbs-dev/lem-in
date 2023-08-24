@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{- /*gotype: lem-in/visualizer.GraphPage*/ -}}
+        LEM-IN visualizer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <style>
+        body {
+            font-family: "Arial", serif;
+            background: floralwhite;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: white;
+                background: black;
+            }
+        }
+
+        #nav {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            font-size: large;
+        }
+
+        main {
+            margin: 10px;
+        }
+
+        #nav span {
+            margin: 10px;
+        }
+
+        #main-svg {
+            border-style: solid;
+            border-radius: 5px;
+            width: 100%;
+            height: 100%;
+            max-height: 80vh;
+        }
+
+        .point {
+            fill: limegreen;
+        }
+
+        .ant {
+            fill: saddlebrown;
+        }
+
+        #start {
+            fill: darkred;
+        }
+
+        #end {
+            fill: darkred;
+        }
+
+        .edge {
+            stroke: darkgreen;
+        }
+
+        .info {
+            font-size: larger;
+            font-weight: bold;
+            margin: 5px
+        }
+
+        ul {
+            font-size: large;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <div id="nav">
+        <span>🐜: <span class="info">{{.Graph.AntNum}}</span></span>
+        <span>Start point: <span class="info">"{{.Graph.Start.Name}}"</span></span>
+        <span>End point: <span class="info">"{{.Graph.End.Name}}"</span></span>
+    </div>
+    <div>
+        <svg id="main-svg" viewBox="{{.ViewBox}}">
+            {{range .Graph.Edges}}
+                <line x1="{{.From.X}}" y1="{{.From.Y}}" x2="{{.To.X}}" y2="{{.To.Y}}"
+                      stroke-width="{{$.EdgeWidth}}"
+                      class="edge"
+                />
+            {{end}}
+            <g id="points" transform="translate(-{{.RoomWidthHalf}} -{{.RoomHeightHalf}})">
+                {{range .Graph.Points}}
+                    <rect x="{{.X}}" y="{{.Y}}" width="{{$.RoomWidth}}" height="{{$.RoomHeight}}"
+                          rx="{{$.EdgeWidth}}"
+                          class="point"
+                    />
+                {{end}}
+                <rect x="{{.Graph.Start.X}}" y="{{.Graph.Start.Y}}" width="{{$.RoomWidth}}" height="{{$.RoomHeight}}"
+                      rx="{{ $.EdgeWidth}}"
+                      id="start"
+                />
+                <rect x="{{.Graph.End.X}}" y="{{.Graph.End.Y}}" width="{{$.RoomWidth}}" height="{{$.RoomHeight}}"
+                      rx="{{$.EdgeWidth}}"
+                      id="end"
+                />
+
+            </g>
+            <g id="ants" transform="translate(-{{.RoomHeightHalf}} -{{.RoomHeightHalf}})">
+                {{range .Ants}}
+                    <rect x="{{$.Graph.Start.X}}" y="{{$.Graph.Start.Y}}" width="{{$.RoomWidthHalf}}"
+                          height="{{$.RoomWidthHalf}}"
+                          rx="{{$.EdgeWidth}}"
+                          class="ant"
+                    >
+                        <animate attributeName="x" values="{{$.Graph.Start.X}};{{.XAnimations}}" dur="6s"
+                                 fill="freeze"></animate>
+                        <animate attributeName="y" values="{{$.Graph.Start.Y}};{{.YAnimations}}" dur="6s"
+                                 fill="freeze"></animate>
+                    </rect>
+                {{end}}
+            </g>
+            <g id="texts" transform="translate(-{{.RoomWidthHalf}} -{{.RoomHeightHalf}})">
+                {{range .Graph.Points}}
+                    <text x="{{.X}}" y="{{.Y}}" font-size="{{$.RoomHeightHalf}}"
+                          transform="translate({{$.EdgeWidth}} {{$.RoomHeightHalf}})"
+                    >{{.Name}}</text>
+                {{end}}
+                <text x="{{.Graph.Start.X}}" y="{{.Graph.Start.Y}}" font-size="{{$.RoomHeightHalf}}"
+                      transform="translate({{$.EdgeWidth}} {{$.RoomHeightHalf}})"
+                >{{.Graph.Start.Name}}</text>
+
+                <text x="{{.Graph.End.X}}" y="{{.Graph.End.Y}}" font-size="{{$.RoomHeightHalf}}"
+                      transform="translate({{$.EdgeWidth}} {{$.RoomHeightHalf}})"
+                >{{.Graph.End.Name}}</text>
+            </g>
+        </svg>
+    </div>
+    <ul>
+        {{range .Graph.Points}}
+            <li>
+                Name:<span class="info">{{.Name}}</span>
+                X: <span class="info">{{.X}}</span>
+                Y:<span class="info">{{.Y}}</span>
+            </li>
+        {{end}}
+    </ul>
+</main>
+</body>
+</html>
