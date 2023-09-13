@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -44,25 +45,30 @@ func main() {
 	fmt.Println()
 	fmt.Println() // Add this line to ensure a newline after printing the map content.
 
-	// If end node is a neighbor of start node, print path for each ant directly
-	for _, v := range mapOfNodes[startNode.Name].Neighbors {
-		if endNode == v {
-			for i := 1; i <= numberOfAnts; i++ {
-				fmt.Printf("L%d-%s ", i, endNode.Name)
-			}
-			fmt.Println()
-			return
-		}
-	}
 	// Find all paths from start node to end node
 	var takenPath []string
+
 	allPaths := Solver(takenPath, mapOfNodes, startNode, endNode)
+	fmt.Println("All paths found:", allPaths)
+
 	paths := allocatePaths(allPaths, startNode, mapOfNodes)
+	fmt.Println("Allocated paths:", paths)
+
 	for i, path := range paths {
 		paths[i] = path[1:]
 	}
-	// Find optimal paths for ants to travel
+
 	lemin(numberOfAnts, paths, mapOfNodes)
+
+	// Find optimal paths for ants to travel
+	/* 	antQueues := lemin(numberOfAnts, paths, mapOfNodes)
+	   	usedPaths := make([][]string, 0)
+	   	for i, queue := range antQueues {
+	   		if len(queue) > 0 {
+	   			usedPaths = append(usedPaths, paths[i])
+	   		}
+	   	}
+	   	fmt.Println("Used paths:", usedPaths) */
 
 	// Print how long the program took to run
 	elapsed := time.Since(start)
@@ -147,6 +153,7 @@ func Solver(takenPath []string, mapOfNodes map[string]*s.Node, startNode, endNod
 
 	// Use BFS to find a path from startNode to endNode.
 	extractedPath := reverse(s.BFS(startNode, endNode, mapOfNodes))
+	// fmt.Println("Extracted path:", extractedPath)
 
 	// Construct the full path by appending the taken path and the extracted path.
 	var fullpath []string
@@ -159,7 +166,7 @@ func Solver(takenPath []string, mapOfNodes map[string]*s.Node, startNode, endNod
 	startNode.Used = true
 
 	// Reset visited markers for all nodes.
-	s.ClearVisited(mapOfNodes)
+	s.ResetVisited(mapOfNodes)
 
 	// Recurse into neighbors to find additional paths.
 	var result [][]string
@@ -198,25 +205,16 @@ func isEqual(fullpath, path []string) bool {
 }
 
 // minLen finds the minimum length after summing the lengths of the paths and their respective ant queues.
-// This is a common technique used in Go to find the largest possible int value.
-// It is used to initialize the minimum length to the largest possible value.
-// This is done to ensure that the first path length + ant queue length is smaller than the current minimum.
 func minLen(p [][]string, ants [][]int) int {
-	// ^uint(0) inverts all the bits of the largest possible uint value.
-	// >> 1 shifts the bits one position to the right.
-	// The effect is to get the largest possible int value.
-	// This is an idiomatic way in Go to get the largest int value, considering differences in architectures (32-bit vs 64-bit).
 	min := int(^uint(0) >> 1)
 
-	// Loop through all the paths.
 	for i := range p {
-		// Check if the current combined length (path length + ant queue length) is smaller than the current minimum.
 		if min > len(p[i])+len(ants[i]) {
-			min = len(p[i]) + len(ants[i]) // Update the minimum if the condition is true.
+			min = len(p[i]) + len(ants[i])
 		}
 	}
 
-	return min // Return the smallest combined length found.
+	return min
 }
 
 // MaxLen finds the maximum length after summing the lengths of the paths and their respective ant queues.
@@ -230,9 +228,12 @@ func MaxLen(p [][]string, ants [][]int) int {
 	return min
 }
 
-// lemin distributes 'n' ants across multiple paths ensuring minimal steps to destination.
-// It constructs the solution by placing ants in specific paths considering the optimal movement.
-func lemin(n int, p [][]string, m map[string]*s.Node) {
+type AntMovement struct {
+	AntNumber int
+	Movement  string
+}
+
+func lemin(n int, p [][]string, m map[string]*s.Node) [][]int {
 	// Initialize a list of queues to assign ants to paths.
 	var antQueues [][]int = make([][]int, len(p))
 	i := 1
@@ -243,7 +244,7 @@ func lemin(n int, p [][]string, m map[string]*s.Node) {
 		for k := 0; k < len(p); k++ {
 			if len(p[k])+len(antQueues[k]) <= min {
 				antQueues[k] = append(antQueues[k], i)
-				min = minLen(p, antQueues) /*  */
+				min = minLen(p, antQueues)
 				break
 			}
 		}
@@ -251,22 +252,34 @@ func lemin(n int, p [][]string, m map[string]*s.Node) {
 	}
 
 	// Construct a movement solution for the ants.
-	max := MaxLen(p, antQueues)
-	var solution [][]string = make([][]string, max-1)
+	var solution [][]AntMovement = make([][]AntMovement, MaxLen(p, antQueues)-1)
 	for i := 0; i < len(p); i++ {
 		for j, v := range antQueues[i] {
 			for k, w := range p[i] {
-				str := fmt.Sprintf("L%d-%s", v, w)
-				solution[k+j] = append(solution[k+j], str)
+				movement := AntMovement{
+					AntNumber: v,
+					Movement:  w,
+				}
+				solution[k+j] = append(solution[k+j], movement)
 			}
 		}
 	}
 
-	// Print the ant movement solution.
 	for _, v := range solution {
-		fmt.Println(strings.Join(v, " "))
+		sort.Slice(v, func(i, j int) bool {
+			if v[i].AntNumber == v[j].AntNumber {
+				return v[i].Movement < v[j].Movement
+			}
+			return v[i].AntNumber < v[j].AntNumber
+		})
+		movements := make([]string, len(v))
+		for idx, movement := range v {
+			movements[idx] = fmt.Sprintf("L%d-%s", movement.AntNumber, movement.Movement)
+		}
+		fmt.Println(strings.Join(movements, " "))
 	}
 
+	return antQueues
 }
 
 // reverse reverses the order of a slice of strings.

@@ -44,7 +44,7 @@ func BFS(start, end *Node, n map[string]*Node) []string {
 }
 
 // ClearVisited resets the Visited flag for nodes in the graph which haven't been used.
-func ClearVisited(n map[string]*Node) {
+func ResetVisited(n map[string]*Node) {
 	for _, v := range n {
 		if !v.Used {
 			v.Visited = false

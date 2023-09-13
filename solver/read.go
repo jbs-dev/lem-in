@@ -10,7 +10,7 @@ import (
 // ReadGraph reads graph configuration from file to Graph struct
 //
 // Returns an error if configuration is not valid
-func ReadGraph(source string) (*Graph, error) {
+func ReadGraph(source string, allPathsStr string, allocatedPathsStr string) (*Graph, error) {
 	// remove all \r for strings created by MS DOS users
 	cfgStr := strings.ReplaceAll(source, "\r", "")
 	cfgStr += "\n"
@@ -24,12 +24,6 @@ func ReadGraph(source string) (*Graph, error) {
 
 	cfgStr = strings.ReplaceAll(cfgStr, " \n", "\n")
 
-	// make ##start and ##end declarations inline
-	// from:
-	// ##start
-	// start 0 0
-	// to:
-	// ##startstart 0 0
 	cfgStr = strings.NewReplacer("##start\n", "##start", "##end\n", "##end").Replace(cfgStr)
 
 	cfgLines := strings.Split(cfgStr, "\n")
@@ -65,6 +59,8 @@ func ReadGraph(source string) (*Graph, error) {
 		if err != nil {
 			return nil, fmt.Errorf("invalid point in line %v ('%v'): %v", i+1, line, err)
 		}
+		// Add a print statement here
+		// fmt.Printf("Processed line: %v\n", line)
 	}
 
 	if graph.Start == nil {
@@ -89,6 +85,19 @@ func ReadGraph(source string) (*Graph, error) {
 		}
 		graph.Edges = append(graph.Edges, edge)
 	}
+
+	// Parse the AllPaths and AllocatedPaths lines
+	err = graph.ParsePaths(allPathsStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid AllPaths line: %v", err)
+	}
+	err = graph.ParsePaths(allocatedPathsStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid AllocatedPaths line: %v", err)
+	}
+
+	graph.Points = append(graph.Points, graph.Start, graph.End)
+
 	return graph, nil
 }
 
@@ -103,7 +112,7 @@ func (g *Graph) parsePointLine(line string) error {
 		if g.Start != nil {
 			return fmt.Errorf("only one ##start allowed")
 		}
-		line = strings.TrimPrefix(line, "##start")
+		line = strings.TrimSpace(strings.TrimPrefix(line, "##start"))
 		point, err = ParsePoint(line)
 		if err != nil {
 			return err
@@ -114,7 +123,7 @@ func (g *Graph) parsePointLine(line string) error {
 		if g.End != nil {
 			return fmt.Errorf("only one ##end allowed")
 		}
-		line = strings.TrimPrefix(line, "##end")
+		line = strings.TrimSpace(strings.TrimPrefix(line, "##end"))
 		point, err = ParsePoint(line)
 		if err != nil {
 			return err
@@ -138,10 +147,10 @@ func (g *Graph) parsePointLine(line string) error {
 				return fmt.Errorf("room coordinates [x %d, y %d] are duplicated", p.X, p.Y)
 			}
 		}
-
 		g.Points = append(g.Points, point)
 	}
-
 	g.PointByName[point.Name] = point
+	// Add a print statement here
+	// fmt.Printf("Point added: %v\n", point)
 	return nil
 }
